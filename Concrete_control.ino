@@ -15,11 +15,11 @@
 ESPRotary r = ESPRotary(ROTARY_PIN1, ROTARY_PIN2, CLICKS_PER_STEP);
 Button2 b = Button2(BUTTON_PIN);
 
-BleKeyboard bleKeyboard = BleKeyboard("K810", "Logitech");
+BleKeyboard bleKeyboard = BleKeyboard("Concrete Control", "md-tech");
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("Starting BLE work!");
+  Serial.println("BLE active");
   bleKeyboard.begin();
   
   r.setChangedHandler(rotate);
@@ -34,14 +34,13 @@ void loop() {
   r.loop();
   b.loop();
 }
-// on change
+
 void rotate(ESPRotary& r) {
     Serial.println(r.getPosition());
 }
 
 
 void showDirection(ESPRotary& r) {
-    
     if (r.getDirection() == RE_RIGHT) {
       bleKeyboard.write(KEY_MEDIA_VOLUME_UP);
     } else {
@@ -51,18 +50,16 @@ void showDirection(ESPRotary& r) {
     bleKeyboard.releaseAll();
 }
 
-
 void click(Button2& btn) {
     if (bleKeyboard.isConnected()) {
       bleKeyboard.write(KEY_MEDIA_PLAY_PAUSE);
       
       bleKeyboard.releaseAll();
     }
-    Serial.println("Click!");
+    Serial.println("Click");
 }
-
 
 void resetPosition(Button2& btn) {
     r.resetPosition();
-    Serial.println("Reset!");
+    Serial.println("Reset");
 }
