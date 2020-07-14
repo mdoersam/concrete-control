@@ -1,3 +1,6 @@
+
+#include <BleKeyboard.h>
+
 #include "Button2.h";
 #include "ESPRotary.h";
 
@@ -12,10 +15,12 @@
 ESPRotary r = ESPRotary(ROTARY_PIN1, ROTARY_PIN2, CLICKS_PER_STEP);
 Button2 b = Button2(BUTTON_PIN);
 
+BleKeyboard bleKeyboard = BleKeyboard("K810", "Logitech");
 
 void setup() {
   Serial.begin(115200);
-  delay(50);
+  Serial.println("Starting BLE work!");
+  bleKeyboard.begin();
   
   r.setChangedHandler(rotate);
   r.setLeftRotationHandler(showDirection);
@@ -29,32 +34,35 @@ void loop() {
   r.loop();
   b.loop();
 }
-
 // on change
 void rotate(ESPRotary& r) {
-   Serial.println(r.getPosition());
+    Serial.println(r.getPosition());
 }
 
 
 void showDirection(ESPRotary& r) {
-  Serial.println(directionToVolume(r.getDirection()));
+    
+    if (r.getDirection() == RE_RIGHT) {
+      bleKeyboard.write(KEY_MEDIA_VOLUME_UP);
+    } else {
+      bleKeyboard.write(KEY_MEDIA_VOLUME_DOWN);
+    }
+    
+    bleKeyboard.releaseAll();
 }
 
 
 void click(Button2& btn) {
-  Serial.println("Click!");
+    if (bleKeyboard.isConnected()) {
+      bleKeyboard.write(KEY_MEDIA_PLAY_PAUSE);
+      
+      bleKeyboard.releaseAll();
+    }
+    Serial.println("Click!");
 }
 
 
 void resetPosition(Button2& btn) {
-  r.resetPosition();
-  Serial.println("Reset!");
-}
-
-String directionToVolume(byte direction) {
-  if (direction == RE_LEFT) {
-    return "DOWN";
-  } else if (direction == RE_RIGHT) {
-    return "UP";
-  }
+    r.resetPosition();
+    Serial.println("Reset!");
 }
