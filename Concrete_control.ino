@@ -5,9 +5,9 @@
 #include "ESPRotary.h";
 
 
-#define ROTARY_PIN1  19
-#define ROTARY_PIN2 16
-#define BUTTON_PIN  17
+#define ROTARY_PIN1  14
+#define ROTARY_PIN2 22
+#define BUTTON_PIN  23
 
 #define CLICKS_PER_STEP   4  
 
