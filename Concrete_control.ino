@@ -29,9 +29,6 @@ void setup() {
 }
 
 
-int previous1 = 0;
-int previous2 = 0;
-
 void loop() {
   r.loop();
   b.loop();
@@ -46,7 +43,6 @@ void rotate(ESPRotary& r) {
       sendViaBluetooth(KEY_MEDIA_VOLUME_DOWN);
     }
 }
-
 
 void sendViaBluetooth(const MediaKeyReport c){
     bleKeyboard.write(c);
