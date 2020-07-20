@@ -9,12 +9,10 @@
 #define ROTARY_PIN2 14
 #define BUTTON_PIN  23
 
-#define CLICKS_PER_STEP   1
-
-const int encoderResolution = 5;
+#define CLICKS_PER_STEP   4
 
 
-ESPRotary r = ESPRotary(ROTARY_PIN1, ROTARY_PIN2);//, CLICKS_PER_STEP);
+ESPRotary r = ESPRotary(ROTARY_PIN1, ROTARY_PIN2, CLICKS_PER_STEP);
 Button2 b = Button2(BUTTON_PIN);
 
 BleKeyboard bleKeyboard = BleKeyboard("Concrete Control", "md-tech");
@@ -25,8 +23,6 @@ void setup() {
   bleKeyboard.begin();
   
   r.setChangedHandler(rotate);
-  r.setLeftRotationHandler(showDirection);
-  r.setRightRotationHandler(showDirection);
 
   b.setTapHandler(click);
   b.setLongClickHandler(resetPosition);
@@ -42,32 +38,27 @@ void loop() {
 }
 
 void rotate(ESPRotary& r) {
-   // Serial.println(r.getPosition());
-}
-
-int encoderActionCount = 0;
-
-void showDirection(ESPRotary& r) {
-  if((++encoderActionCount % encoderResolution) == 0){
-    
     if (r.getDirection() == RE_RIGHT) {
       Serial.println("up");
-      bleKeyboard.write(KEY_MEDIA_VOLUME_UP);
+      sendViaBluetooth(KEY_MEDIA_VOLUME_UP);
     } else {
       Serial.println("down");
-      bleKeyboard.write(KEY_MEDIA_VOLUME_DOWN);
+      sendViaBluetooth(KEY_MEDIA_VOLUME_DOWN);
     }
-    
-    bleKeyboard.releaseAll();
-    
-  }
 }
+
+
+void sendViaBluetooth(const MediaKeyReport c){
+    bleKeyboard.write(c);
+    bleKeyboard.release(c);
+}
+
 
 void click(Button2& btn) {
     if (bleKeyboard.isConnected()) {
       bleKeyboard.write(KEY_MEDIA_PLAY_PAUSE);
       
-      bleKeyboard.releaseAll();
+      bleKeyboard.release(KEY_MEDIA_PLAY_PAUSE);
     }
     Serial.println("Click");
 }
